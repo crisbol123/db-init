@@ -28,16 +28,16 @@ exports.handler = async (event, context, callback) => {
       host: rdsURL,
       port: 3306,
       user: 'root',
-      password: 'Julian1234'
+      password: rdsSecret
     });
 
     console.log("Conectado a la base de datos");
 
     // Crear la base de datos y el usuario
-    const createDbQuery = `CREATE DATABASE moneywise;`;
+    const createDbQuery = `CREATE DATABASE people;`;
 
     await connection.query(createDbQuery);
-    console.log("Base de datos 'foods' creada.");
+    console.log("Base de datos 'people' creada.");
     await connection.end();
     
     console.log("Conexión a la base de datos cerrada.");
