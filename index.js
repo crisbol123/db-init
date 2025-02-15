@@ -28,7 +28,7 @@ exports.handler = async (event, context, callback) => {
       host: rdsURL,
       port: 3306,
       user: 'root',
-      password: rdsSecret
+      password: rdsCredentials.password
     });
 
     console.log("Conectado a la base de datos");
