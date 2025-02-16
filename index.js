@@ -23,6 +23,7 @@ exports.handler = async (event, context, callback) => {
     const userSecret = await secretsmanager.getSecretValue({ SecretId: userSecretArn }).promise();
     console.log("FIN  Obtener Credenciales: ", rdsSecret, " ",userSecret);
     const rdsCredentials = JSON.parse(rdsSecret.SecretString);
+    const userCredentials = JSON.parse(userSecret.SecretString);
     console.log("INICIO CONECTAR CON AWS ",rdsURL , rdsCredentials) ;
     const connection = await mysql.createConnection({
       host: rdsURL,
@@ -33,11 +34,14 @@ exports.handler = async (event, context, callback) => {
 
     console.log("Conectado a la base de datos");
 
-    // Crear la base de datos y el usuario
-    const createDbQuery = `CREATE DATABASE people;`;
+   const createUserAndDbQuery = `
+     CREATE USER '${userCredentials.username}'@'%' IDENTIFIED BY '${userCredentials.password}';
+     GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO '${userSecret.username}'@'%' WITH GRANT OPTION;
+     CREATE DATABASE people;
+   `;
 
-    await connection.query(createDbQuery);
-    console.log("Base de datos 'people' creada.");
+   await connection.query(createUserAndDbQuery);
+    console.log("Base de datos 'people' creada y secretos");
     await connection.end();
     
     console.log("Conexión a la base de datos cerrada.");
