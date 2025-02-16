@@ -34,9 +34,14 @@ exports.handler = async (event, context, callback) => {
 
     console.log("Conectado a la base de datos");
 
-   const createUserAndDbQuery = `CREATE USER '${userCredentials.username}'@'%' IDENTIFIED BY '${userCredentials.password}';GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO '${userCredentials.username}'@'%' WITH GRANT OPTION;CREATE DATABASE people;`;
+const createUserQuery = `CREATE USER '${userCredentials.username}'@'%' IDENTIFIED BY '${userCredentials.password}';`;
+const grantPrivilegesQuery = `GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD ON *.* TO '${userCredentials.username}'@'%' WITH GRANT OPTION;`;
+const createDatabaseQuery = `CREATE DATABASE people;`;
 
-   await connection.query(createUserAndDbQuery);
+await connection.query(createUserQuery);
+await connection.query(grantPrivilegesQuery);
+await connection.query(createDatabaseQuery);
+
     console.log("Base de datos 'people' creada y secretos");
     await connection.end();
     
